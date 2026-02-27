@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>RSSまとめスマートリーダー</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#090909">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="まとめリーダー">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -486,9 +492,12 @@ input { font-family: var(--font-sans); }
 .reader-body {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 40px 60px 80px;
   scrollbar-width: thin;
   scrollbar-color: var(--border2) transparent;
+  word-break: break-word;
+  overscroll-behavior-x: none;
 }
 
 .reader-body::-webkit-scrollbar { width: 5px; }
@@ -542,6 +551,7 @@ input { font-family: var(--font-sans); }
   color: var(--text);
   font-feature-settings: "palt";
   word-break: break-word;
+  overflow-x: hidden;
 }
 
 /* サイトの色付き文字を強制上書き */
@@ -2022,7 +2032,7 @@ function renderReader(article, cleanedArticle, cleanedComments, commentCount, og
     commentsSection.className = 'comments-section hidden';
     commentsSection.id = 'commentsSection';
 
-    const commentLabel = commentCount ? `💬 コメント（${commentCount}件）` : '💬 コメント';
+    const commentLabel = '💬 コメント';
     commentsSection.innerHTML = `
       <div class="comments-title">
         <span>${commentLabel}</span>
@@ -2040,7 +2050,7 @@ function renderReader(article, cleanedArticle, cleanedComments, commentCount, og
     body.appendChild(commentsSection);
 
     // コメントボタン表示
-    const label = commentCount ? `💬 ${commentCount}件` : '💬 コメント';
+    const label = '💬 コメント';
     commentBtn.textContent = label;
     commentBtn.style.display = '';
     commentBtn.classList.remove('active');
