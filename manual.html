@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RSSまとめスマートリーダー 使い方ガイド</title>
+<style>
+:root {
+  --bg: #090909;
+  --bg2: #111113;
+  --bg3: #18181c;
+  --border: #252528;
+  --accent: #e8a020;
+  --text: #e4e2dc;
+  --text2: #a8a6a0;
+  --text3: #606060;
+  --blue: #6aaae0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  font-size: 15px;
+  line-height: 1.8;
+  padding: 0 0 60px;
+}
+.hero {
+  background: linear-gradient(135deg, #111113 0%, #1a1a1e 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 24px 40px;
+  text-align: center;
+}
+.hero-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+.hero-sub {
+  font-size: 13px;
+  color: var(--text2);
+  letter-spacing: 0.1em;
+}
+.hero-badge {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 6px 16px;
+  background: var(--accent);
+  color: #000;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.section {
+  margin-top: 48px;
+}
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  border-left: 3px solid var(--accent);
+  padding-left: 12px;
+  margin-bottom: 20px;
+}
+.step {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.step-num {
+  width: 32px;
+  height: 32px;
+  background: var(--accent);
+  color: #000;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.step-body h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.step-body p {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.tip {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--blue);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text2);
+}
+.tip strong { color: var(--blue); }
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 480px) {
+  .feature-grid { grid-template-columns: 1fr; }
+}
+.feature-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.feature-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+.feature-card h3 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.feature-card p {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.faq-item {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+}
+.faq-q {
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+.faq-a {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.cta {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  text-align: center;
+  margin-top: 48px;
+}
+.cta-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.cta-btn {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 12px 32px;
+  background: var(--accent);
+  color: #000;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-title">RSSまとめスマートリーダー</div>
+  <div class="hero-sub">RSS MATOME SMART READER</div>
+  <div class="hero-badge">📖 使い方ガイド</div>
+</div>
+
+<div class="container">
+
+  <!-- 基本の使い方 -->
+  <div class="section">
+    <div class="section-title">基本の使い方</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>フィードを追加する</h3>
+        <p>左パネル下部の入力欄にRSSのURLを入力して「追加」ボタンを押します。サイトのURLを入力するだけでも自動でRSSを検出します。</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>おすすめフィードから追加する</h3>
+        <p>「📋 おすすめフィードを追加」ボタンを押すと、人気のまとめブログ28サイトが一覧表示されます。気になるサイトの「追加」ボタンを押すだけで登録できます。</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>記事を読む</h3>
+        <p>中央の記事一覧から読みたい記事をクリックすると、右パネルにリーダーモードで表示されます。クリーンな表示でスマートに読めます。</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>コメントを見る</h3>
+        <p>記事上部の「💬 コメント」ボタンを押すとコメント欄が表示されます。もう一度押すと非表示になります。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 機能一覧 -->
+  <div class="section">
+    <div class="section-title">主な機能</div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🌙</div>
+        <h3>ダーク / ライトテーマ</h3>
+        <p>左上の☾ボタンでテーマを切り替えられます。設定は次回起動時も維持されます。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3>フィード更新</h3>
+        <p>中央パネル上部の「↺ 更新」ボタンで最新記事を取得できます。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔤</div>
+        <h3>文字サイズ変更</h3>
+        <p>記事ヘッダーの「A-」「A+」ボタンで文字の大きさを変えられます。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔗</div>
+        <h3>元記事を開く</h3>
+        <p>「元記事 →」ボタンで元サイトをブラウザで開けます。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>スマホ対応</h3>
+        <p>iPhoneでもAndroidでも使えます。ホーム画面に追加するとアプリのように起動できます。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <h3>設定の自動保存</h3>
+        <p>追加したフィードや既読情報はブラウザに自動保存されます。次回開いたときも引き継がれます。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- スマホでのホーム画面追加 -->
+  <div class="section">
+    <div class="section-title">スマホのホーム画面に追加する方法</div>
+
+    <div class="tip">
+      <strong>iPhone（Safari）</strong><br>
+      Safariでアプリを開く → 下部の共有ボタン（四角＋矢印）をタップ → 「ホーム画面に追加」→「追加」
+    </div>
+    <div class="tip">
+      <strong>Android（Chrome）</strong><br>
+      Chromeでアプリを開く → 右上のメニュー（⋮）→「ホーム画面に追加」または「アプリをインストール」
+    </div>
+  </div>
+
+  <!-- よくある質問 -->
+  <div class="section">
+    <div class="section-title">よくある質問</div>
+
+    <div class="faq-item">
+      <div class="faq-q">Q. 記事が取得できないサイトがあります</div>
+      <div class="faq-a">CORSプロキシ経由でRSSを取得しているため、一時的に失敗することがあります。「↺ 更新」ボタンを押して再試行してください。時間をおくと取得できることが多いです。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Q. フィードを削除したい</div>
+      <div class="faq-a">左パネルのフィード名にマウスを乗せると右端に「✕」ボタンが表示されます。タップ・クリックで削除できます。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Q. 記事の内容が正しく表示されない</div>
+      <div class="faq-a">一部のサイトはCORS制限により記事本文が取得できない場合があります。「元記事 →」ボタンから元サイトでご覧ください。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Q. 追加したフィードが消えた</div>
+      <div class="faq-a">ブラウザのキャッシュ・履歴を削除するとフィード情報も消えることがあります。シークレットモードでは保存されません。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Q. 無料で使えますか？</div>
+      <div class="faq-a">完全無料です。登録不要でそのまま使えます。</div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <div class="cta-title">さっそく使ってみよう</div>
+    <p style="font-size:13px;color:var(--text2)">登録不要・完全無料・スマートに読める</p>
+    <a class="cta-btn" href="https://parakeetw.github.io/rss-reader/" target="_blank">アプリを開く →</a>
+  </div>
+
+</div>
+</body>
+</html>

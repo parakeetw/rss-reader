@@ -201,12 +201,15 @@ input { font-family: var(--font-sans); }
   padding: 12px;
   border-top: 1px solid var(--border);
   flex-shrink: 0;
-  overflow: visible;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .add-feed-row {
   display: flex;
   gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .add-feed-input {
@@ -926,10 +929,8 @@ body.light {
 .feed-panel-header-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .theme-toggle-btn{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background var(--trans),color var(--trans)}
 .theme-toggle-btn:hover{background:var(--bg4);color:var(--accent)}
-.panel-toggle-btn{width:22px;height:44px;background:var(--bg3);border:1px solid var(--border2);border-radius:0 6px 6px 0;color:var(--text3);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background var(--trans),color var(--trans);align-self:center;position:relative;z-index:5}
-.panel-toggle-btn:hover{background:var(--bg4);color:var(--accent)}
-#feed-panel.collapsed{width:0!important;min-width:0!important;overflow:hidden!important;border-right:none!important}
-#article-panel.collapsed{width:0!important;min-width:0!important;max-width:0!important;overflow:hidden!important;border-right:none!important}
+
+
 .recommended-btn{width:100%;padding:16px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text2);font-size:13px;text-align:left;display:flex;align-items:center;gap:6px;margin-top:6px;transition:background var(--trans),color var(--trans);min-height:52px}
 .recommended-btn:hover{background:var(--bg4);color:var(--text)}
 #recommendedPanel{display:none;position:fixed;top:0;left:0;bottom:0;width:320px;background:var(--bg2);border-right:1px solid var(--border);z-index:200;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,0.5)}
@@ -988,9 +989,6 @@ body.light {
     <div class="rec-list" id="recList"></div>
   </div>
 
-  <!-- 左パネルトグル -->
-  <button class="panel-toggle-btn" id="feedToggleBtn" title="フィード折りたたみ">◀</button>
-
   <!-- 中央パネル：記事一覧 -->
   <div id="article-panel">
     <!-- モバイル用トップバー -->
@@ -1013,9 +1011,6 @@ body.light {
       </div>
     </div>
   </div>
-
-  <!-- 中央パネルトグル -->
-  <button class="panel-toggle-btn" id="articleToggleBtn" title="記事一覧折りたたみ">◀</button>
 
   <!-- 右パネル：リーダー -->
   <div id="reader-panel">
@@ -1091,7 +1086,7 @@ const PROXIES = [
   'https://api.codetabs.com/v1/proxy?quest=',
 ];
 
-async function fetchWithTimeout(url, ms = 8000) {
+async function fetchWithTimeout(url, ms = 5000) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), ms);
   try {
@@ -1105,7 +1100,7 @@ async function proxyFetchRaw(url) {
   let lastErr;
   for (const proxy of PROXIES) {
     try {
-      const res = await fetchWithTimeout(proxy + encodeURIComponent(url), 8000);
+      const res = await fetchWithTimeout(proxy + encodeURIComponent(url), 5000);
       if (res.ok) return res;
       lastErr = new Error(`HTTP ${res.status}`);
     } catch(e) { lastErr = e; }
@@ -2146,16 +2141,6 @@ function initEvents() {
     const isLight = document.body.classList.toggle('light');
     themeToggleBtn.textContent = isLight ? '☀' : '☾';
     localStorage.setItem('rss_theme', isLight ? 'light' : 'dark');
-  });
-
-  // カラムトグル
-  document.getElementById('feedToggleBtn').addEventListener('click', () => {
-    const collapsed = document.getElementById('feed-panel').classList.toggle('collapsed');
-    document.getElementById('feedToggleBtn').textContent = collapsed ? '▶' : '◀';
-  });
-  document.getElementById('articleToggleBtn').addEventListener('click', () => {
-    const collapsed = document.getElementById('article-panel').classList.toggle('collapsed');
-    document.getElementById('articleToggleBtn').textContent = collapsed ? '▶' : '◀';
   });
 
   // おすすめフィードパネル
