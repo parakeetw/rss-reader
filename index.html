@@ -1435,14 +1435,16 @@ const ARTICLE_SELECTORS = [
   'article',
   // ID指定（優先度高）
   '#article-body', '#entry-body', '#main-article', '#post-body',
-  '#article', '#content-main', '#main-content', '#content',
-  // doorblog/livedoor系
-  '#ent-body', '.ent-body', '#entry', '.entry-body-text',
-  // クラス指定
+  '#article',
+  // livedoor/doorblog系（サイドバーを含まない本文エリア）
+  '.entry-body-text', '#ent-body', '.ent-body',
+  '.article-body-inner', '.entry-content-inner',
+  // 汎用クラス
   '.article-body', '.entry-body', '.post-body',
-  '.post-content', '.entry-content', '.article-content', '.main-article',
+  '.post-content', '.entry-content', '.article-content',
   '.article__body', '.matome-body', '.matome-content',
-  // 汎用（最後）
+  // 最後の手段（サイドバーを含みやすいので最後）
+  '#content-main', '#main-content',
   'main',
 ];
 
@@ -1474,8 +1476,16 @@ const NOISE_SELECTORS = [
   "[class*='banner']", "[class*='recommend']", "[class*='related']",
   "[class*='ranking']", "[class*='popular']",
   "[id*='sidebar']", "[id*='ad']", "[id*='banner']",
-  '.breadcrumb', '.breadcrumbs', '.share', '.sns', '.social',
+  ".breadcrumb", ".breadcrumbs", ".share", ".sns", ".social",
   "[class*='share']", "[class*='sns']",
+  // livedoor/doorblog系サイドバー・ナビ
+  '#side', '.side', '#sidebar', '.sidebar-inner',
+  '.recent-entries', '.recent-comments', '.categories',
+  '.profile', '.search', '.calendar', '.archives',
+  '[id*="side"]', '[class*="side"]',
+  // 関連記事・最新記事リスト
+  '.entry-footer', '.post-footer', '.article-footer',
+  '[class*="related"]', '[class*="recent"]', '[id*="related"]',
   'script', 'style', 'noscript',
 ];
 
