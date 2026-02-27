@@ -1087,23 +1087,33 @@ const PROXIES = [
 ];
 
 async function fetchWithTimeout(url, ms = 5000) {
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), ms);
-  try {
-    const res = await fetch(url, { signal: ctrl.signal });
-    clearTimeout(timer);
-    return res;
-  } catch(e) { clearTimeout(timer); throw e; }
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('timeout')), ms);
+    fetch(url).then(res => {
+      clearTimeout(timer);
+      resolve(res);
+    }).catch(e => {
+      clearTimeout(timer);
+      reject(e);
+    });
+  });
 }
 
 async function proxyFetchRaw(url) {
+  // http://のURLはhttps://でも試みる（プロキシがhttpを拒否する場合の対策）
+  const urls = [url];
+  if (url.startsWith('http://')) {
+    urls.unshift(url.replace('http://', 'https://'));
+  }
   let lastErr;
-  for (const proxy of PROXIES) {
-    try {
-      const res = await fetchWithTimeout(proxy + encodeURIComponent(url), 5000);
-      if (res.ok) return res;
-      lastErr = new Error(`HTTP ${res.status}`);
-    } catch(e) { lastErr = e; }
+  for (const tryUrl of urls) {
+    for (const proxy of PROXIES) {
+      try {
+        const res = await fetchWithTimeout(proxy + encodeURIComponent(tryUrl), 5000);
+        if (res.ok) return res;
+        lastErr = new Error(`HTTP ${res.status}`);
+      } catch(e) { lastErr = e; }
+    }
   }
   throw lastErr || new Error('全プロキシで取得失敗');
 }
