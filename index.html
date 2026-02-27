@@ -99,9 +99,11 @@ input { font-family: var(--font-sans); }
 .feed-list {
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
   padding: 8px 0;
   scrollbar-width: thin;
   scrollbar-color: var(--border2) transparent;
+  -webkit-overflow-scrolling: touch;
 }
 
 .feed-item {
@@ -193,6 +195,7 @@ input { font-family: var(--font-sans); }
   padding: 12px;
   border-top: 1px solid var(--border);
   flex-shrink: 0;
+  overflow: visible;
 }
 
 .add-feed-row {
@@ -917,7 +920,7 @@ body.light {
 .panel-toggle-btn:hover{background:var(--bg4);color:var(--accent)}
 #feed-panel.collapsed{width:0!important;min-width:0!important;overflow:hidden!important;border-right:none!important}
 #article-panel.collapsed{width:0!important;min-width:0!important;max-width:0!important;overflow:hidden!important;border-right:none!important}
-.recommended-btn{width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text2);font-size:12px;text-align:left;display:flex;align-items:center;gap:6px;margin-top:6px;transition:background var(--trans),color var(--trans)}
+.recommended-btn{width:100%;padding:16px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text2);font-size:13px;text-align:left;display:flex;align-items:center;gap:6px;margin-top:6px;transition:background var(--trans),color var(--trans);min-height:52px}
 .recommended-btn:hover{background:var(--bg4);color:var(--text)}
 #recommendedPanel{display:none;position:fixed;top:0;left:0;bottom:0;width:320px;background:var(--bg2);border-right:1px solid var(--border);z-index:200;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,0.5)}
 #recommendedPanel.open{display:flex}
@@ -1455,10 +1458,19 @@ const NOISE_SELECTORS = [
 ];
 
 const COMMENT_NOISE = [
-  // コメントセクション全体のコンテナのみ（comment-body等は消さない）
-  '#comments', '#comments-area', '#comment-section',
-  '#comment-form', '.comment-form', '.comment-respond',
-  '#respond', '.respond',
+  // 汎用
+  '#comments', '#comments-area', '#comment-section', '#comment-list',
+  '#comment_list', '#comment-area', '#comment_area', '#disqus_thread',
+  '.comments', '.comment-list', '.comment_list', '.comment-area',
+  '.comment-section', '.comment-wrap', '.comment__list', '.comment__container',
+  '#comment-form', '.comment-form', '.comment-respond', '#respond', '.respond',
+  // ハムスター速報
+  '#comments-list', '#comments-wrapper',
+  // livedoor系・jin115
+  '#blog-comment', '.blog-comment', '#blogComment',
+  '#cmt', '.cmt', '#cmtlist', '.cmtlist',
+  // 2ch系
+  '[class*="comment-set"]',
 ];
 
 function findBestNode(doc, selectors) {
@@ -1484,7 +1496,7 @@ function cleanNode(node, removeComments = true) {
 // まとめブログ：記事ノード後の兄弟レスブロックを結合
 // ================================================
 function mergeArticleSiblings(articleNode, doc) {
-  const noisePattern = /sidebar|side-bar|banner|recommend|related|ranking|popular|breadcrumb|share|sns|social|advertisement/i;
+  const noisePattern = /sidebar|side-bar|banner|recommend|related|ranking|popular|breadcrumb|share|sns|social|advertisement|comment|comments|cmt/i;
   const noiseTags = new Set(['HEADER','FOOTER','NAV','ASIDE','SCRIPT','STYLE','NOSCRIPT']);
 
   // 親を最大4段まで遡って「もっとコンテンツが多い祖先」を探す
@@ -1728,16 +1740,67 @@ function extractArticle(html, url) {
   // コメントクリーンアップ
   const cleanedComments = commentNodes.map(node => {
     const clone = node.cloneNode(true);
+    // 基本ノイズ除去
     ['script','style','noscript','iframe','.ad','form','input','button','textarea'].forEach(sel => {
       try { clone.querySelectorAll(sel).forEach(el => el.remove()); } catch(e) {}
+    });
+    // いいね・ハート・リアクション系クラスを除去
+    [
+      '[class*="like"]','[class*="heart"]','[class*="vote"]',
+      '[class*="reaction"]','[class*="favorite"]','[class*="good"]',
+      '[class*="clap"]','[class*="btn"]','[class*="button"]',
+    ].forEach(sel => {
+      try { clone.querySelectorAll(sel).forEach(el => el.remove()); } catch(e) {}
+    });
+    // 全img要素を精査して不要なものを除去
+    clone.querySelectorAll('img').forEach(img => {
+      const src = (img.getAttribute('src') || '').toLowerCase();
+      const alt = (img.getAttribute('alt') || '').toLowerCase();
+      // ハート・いいね・アイコン系の画像を除去
+      if (/heart|like|good|vote|icon|emoji|stamp|sticker|avatar|face/i.test(src + alt)) {
+        img.remove();
+        return;
+      }
+      const p = img.parentElement;
+      if (!p) return;
+      const txt = (p.textContent || '').trim();
+      // 親のテキストがほぼなく画像だけの構造は除去
+      if (txt.length < 5) {
+        p.remove();
+        return;
+      }
+    });
+    // ♡❤だけの要素・数字だけの要素を除去（livedoorのいいねUI）
+    // ※ querySelectorAll中に要素を削除するとスキップされるためArrayに変換
+    Array.from(clone.querySelectorAll('*')).forEach(el => {
+      if (!el.isConnected) return;
+      const txt = (el.textContent || '').trim();
+      // ハート絵文字・数字だけ・空の要素を除去
+      if (/^[♡❤♥💕💗💓💞🤍🩷💖0-9\s]*$/.test(txt) && txt.length < 15 && !el.querySelector('li,p')) {
+        try { el.remove(); } catch(e) {}
+        return;
+      }
+      // ユーザーアイコン画像（顔アイコン）+ ユーザー名だけのブロックを除去
+      const imgs = el.querySelectorAll('img');
+      if (imgs.length >= 1 && txt.length < 30 && !el.querySelector('li')) {
+        const hasHeartImg = Array.from(imgs).some(img => {
+          const src = (img.getAttribute('src') || '').toLowerCase();
+          return /heart|like|good|icon|face|avatar|stamp|emoji/i.test(src);
+        });
+        if (hasHeartImg) try { el.remove(); } catch(e) {}
+      }
     });
     return clone;
   });
 
-  // コメント件数
+  // コメント件数（テキストが実際にあるもののみ）
   let commentCount = 0;
   for (const node of cleanedComments) {
-    commentCount += node.querySelectorAll('li, [class*="comment-item"]').length;
+    const items = node.querySelectorAll('li, [class*="comment-item"], [class*="comment-set"]');
+    items.forEach(item => {
+      if ((item.textContent || '').trim().length > 5) commentCount++;
+    });
+    if (commentCount === 0 && (node.textContent || '').trim().length > 10) commentCount = 1;
   }
 
   // 最初のコメント直後の広告
