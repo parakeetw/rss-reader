@@ -1735,11 +1735,39 @@ function extractArticle(html, url) {
   // OGP画像
   const ogImg = doc.querySelector('meta[property="og:image"]')?.content || null;
 
-  // 記事本文
-  let articleNode = findBestNode(doc, ARTICLE_SELECTORS);
+  // コメント欄を先にdocからマーク（記事本文から除外するため）
+  const commentEls = new Set();
+  for (const sel of [...COMMENT_NOISE, ...COMMENT_SELECTORS]) {
+    try {
+      doc.querySelectorAll(sel).forEach(el => {
+        // 先祖を辿ってマーク
+        let node = el;
+        while (node && node !== doc.body) {
+          commentEls.add(node);
+          node = node.parentElement;
+        }
+        commentEls.add(el);
+      });
+    } catch(e) {}
+  }
+
+  // 記事本文（コメント欄を含まないもの優先）
+  let articleNode = null;
+  for (const sel of ARTICLE_SELECTORS) {
+    try {
+      const el = doc.querySelector(sel);
+      if (el && (el.textContent || '').trim().length > 200) {
+        // このノードがコメント欄でないか確認
+        if (!commentEls.has(el)) {
+          articleNode = el;
+          break;
+        }
+      }
+    } catch(e) {}
+  }
   if (!articleNode) {
     const blocks = Array.from(doc.querySelectorAll('div, section, main'))
-      .filter(el => (el.textContent || '').trim().length > 300)
+      .filter(el => !commentEls.has(el) && (el.textContent || '').trim().length > 300)
       .sort((a,b) => {
         const scoreA = (a.textContent||'').length / (a.querySelectorAll('*').length || 1);
         const scoreB = (b.textContent||'').length / (b.querySelectorAll('*').length || 1);
