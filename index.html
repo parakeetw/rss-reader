@@ -1105,9 +1105,11 @@ async function proxyFetchRaw(url) {
   if (url.startsWith('http://')) {
     urls.unshift(url.replace('http://', 'https://'));
   }
+  // corsproxy.ioを最初に試すプロキシリスト（文字化け対策）
+  const proxies = PROXIES;
   let lastErr;
   for (const tryUrl of urls) {
-    for (const proxy of PROXIES) {
+    for (const proxy of proxies) {
       try {
         const res = await fetchWithTimeout(proxy + encodeURIComponent(tryUrl), 5000);
         if (res.ok) return res;
@@ -1436,14 +1438,19 @@ const ARTICLE_SELECTORS = [
   // ID指定（優先度高）
   '#article-body', '#entry-body', '#main-article', '#post-body',
   '#article',
-  // livedoor/doorblog系（サイドバーを含まない本文エリア）
+  // FC2ブログ
+  '#entry_body', '.entry_body', '#main_area .entry',
+  '.entry-content-text', '#entryBody',
+  // WordPress系
+  '.entry-content', '.post-content', '.wp-post-content',
+  // livedoor/doorblog系
   '.entry-body-text', '#ent-body', '.ent-body',
   '.article-body-inner', '.entry-content-inner',
   // 汎用クラス
   '.article-body', '.entry-body', '.post-body',
-  '.post-content', '.entry-content', '.article-content',
-  '.article__body', '.matome-body', '.matome-content',
-  // 最後の手段（サイドバーを含みやすいので最後）
+  '.article-content', '.article__body',
+  '.matome-body', '.matome-content',
+  // 最後の手段
   '#content-main', '#main-content',
   'main',
 ];
@@ -1486,6 +1493,9 @@ const NOISE_SELECTORS = [
   // 関連記事・最新記事リスト
   '.entry-footer', '.post-footer', '.article-footer',
   '[class*="related"]', '[class*="recent"]', '[id*="related"]',
+  // FC2系サイドバー
+  '#sidebody', '.sidebody', '#side_body',
+  '.fc2-sidetitle', '#sub', '.sub',
   'script', 'style', 'noscript',
 ];
 
