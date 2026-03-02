@@ -1133,33 +1133,53 @@ async function fetchArticleHTML(url) {
   const buf = await res.arrayBuffer();
   const bytes = new Uint8Array(buf);
 
-  // 先頭4KBからcharset宣言を探す
-  const headBytes = bytes.slice(0, 4096);
-  const headAscii = new TextDecoder('ascii', { fatal: false }).decode(headBytes);
-
+  // 1. レスポンスヘッダーのContent-Typeからcharsetを取得
   let encoding = 'UTF-8';
-  // meta charset または XML宣言を探す
-  const charsetMatch = headAscii.match(/charset=["']?\s*([\w-]+)/i);
-  if (charsetMatch) {
-    const cs = charsetMatch[1].toLowerCase().replace(/[-_\s]/g, '');
-    if (cs === 'shiftjis' || cs === 'sjis' || cs === 'xsjis') encoding = 'Shift_JIS';
-    else if (cs === 'eucjp' || cs === 'eucjpms') encoding = 'EUC-JP';
-    // utf8/utf-8はデフォルトのままでOK
-  } else {
-    // charset宣言なし → バイトパターンで判定
-    let sjisHits = 0;
-    const limit = Math.min(bytes.length - 1, 8192);
-    for (let i = 0; i < limit; i++) {
-      const b = bytes[i];
-      if ((b >= 0x81 && b <= 0x9F) || (b >= 0xE0 && b <= 0xEF)) {
-        const b2 = bytes[i + 1];
-        if (b2 >= 0x40 && b2 <= 0xFC && b2 !== 0x7F) {
-          sjisHits++;
-          i++;
+  const ct = res.headers && res.headers.get('content-type');
+  if (ct) {
+    const ctMatch = ct.match(/charset=([\w-]+)/i);
+    if (ctMatch) {
+      const cs = ctMatch[1].toLowerCase().replace(/[-_]/g, '');
+      if (cs === 'shiftjis' || cs === 'sjis' || cs === 'xsjis') encoding = 'Shift_JIS';
+      else if (cs === 'eucjp') encoding = 'EUC-JP';
+    }
+  }
+
+  // 2. ヘッダーで判定できなければHTMLのmetaタグから検出
+  if (encoding === 'UTF-8') {
+    const headBytes = bytes.slice(0, 4096);
+    const headAscii = new TextDecoder('ascii', { fatal: false }).decode(headBytes);
+    const charsetMatch = headAscii.match(/charset=["']?\s*([\w-]+)/i);
+    if (charsetMatch) {
+      const cs = charsetMatch[1].toLowerCase().replace(/[-_\s]/g, '');
+      if (cs === 'shiftjis' || cs === 'sjis' || cs === 'xsjis') encoding = 'Shift_JIS';
+      else if (cs === 'eucjp' || cs === 'eucjpms') encoding = 'EUC-JP';
+    } else {
+      // 3. charset宣言なし → バイトパターンで判定
+      let sjisHits = 0;
+      const limit = Math.min(bytes.length - 1, 8192);
+      for (let i = 0; i < limit; i++) {
+        const b = bytes[i];
+        if ((b >= 0x81 && b <= 0x9F) || (b >= 0xE0 && b <= 0xEF)) {
+          const b2 = bytes[i + 1];
+          if (b2 >= 0x40 && b2 <= 0xFC && b2 !== 0x7F) {
+            sjisHits++;
+            i++;
+          }
         }
       }
+      if (sjisHits > 20) encoding = 'Shift_JIS';
     }
-    if (sjisHits > 20) encoding = 'Shift_JIS';
+  }
+
+  // 4. UTF-8で正常にデコードできるか確認（失敗したらShift_JISを試みる）
+  if (encoding === 'UTF-8') {
+    try {
+      const testDecoder = new TextDecoder('UTF-8', { fatal: true });
+      testDecoder.decode(bytes);
+    } catch(e) {
+      encoding = 'Shift_JIS';
+    }
   }
 
   try {
