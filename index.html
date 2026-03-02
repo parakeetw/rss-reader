@@ -1099,14 +1099,21 @@ async function fetchWithTimeout(url, ms = 5000) {
   });
 }
 
-async function proxyFetchRaw(url) {
-  // http://のURLはhttps://でも試みる（プロキシがhttpを拒否する場合の対策）
+// Shift-JISサイトはcorsproxy.ioが文字コードを壊すのでalloriginsを優先
+const PROXIES_SJIS = [
+  'https://corsproxy.io/?',
+  'https://api.codetabs.com/v1/proxy?quest=',
+  'https://api.allorigins.win/raw?url=',
+  'https://thingproxy.freeboard.io/fetch/',
+];
+
+async function proxyFetchRaw(url, preferSjis = false) {
+  // http://のURLはhttps://でも試みる
   const urls = [url];
   if (url.startsWith('http://')) {
     urls.unshift(url.replace('http://', 'https://'));
   }
-  // corsproxy.ioを最初に試すプロキシリスト（文字化け対策）
-  const proxies = PROXIES;
+  const proxies = preferSjis ? PROXIES_SJIS : PROXIES;
   let lastErr;
   for (const tryUrl of urls) {
     for (const proxy of proxies) {
@@ -1127,59 +1134,42 @@ async function proxyFetch(url) {
 }
 
 // 記事HTML用：エンコーディング自動検出
+// 既知のShift-JISサイト
+// 既知のShift-JISサイト
+const SHIFTJIS_DOMAINS = [
+  'blog.livedoor.jp', 'doorblog.jp',
+];
+
 async function fetchArticleHTML(url) {
   const res = await proxyFetchRaw(url);
-
   const buf = await res.arrayBuffer();
   const bytes = new Uint8Array(buf);
 
-  // 1. レスポンスヘッダーのContent-Typeからcharsetを取得
   let encoding = 'UTF-8';
-  const ct = res.headers && res.headers.get('content-type');
+
+  // 1. Content-Typeヘッダーで判定（プロキシが変換済みならここに反映される）
+  const ct = res.headers ? res.headers.get('content-type') : '';
   if (ct) {
-    const ctMatch = ct.match(/charset=([\w-]+)/i);
-    if (ctMatch) {
-      const cs = ctMatch[1].toLowerCase().replace(/[-_]/g, '');
+    const ctm = ct.match(/charset=([\w-]+)/i);
+    if (ctm) {
+      const cs = ctm[1].toLowerCase().replace(/[-_]/g, '');
       if (cs === 'shiftjis' || cs === 'sjis' || cs === 'xsjis') encoding = 'Shift_JIS';
       else if (cs === 'eucjp') encoding = 'EUC-JP';
+      else encoding = 'UTF-8';
     }
   }
 
-  // 2. ヘッダーで判定できなければHTMLのmetaタグから検出
+  // 2. metaタグで判定
   if (encoding === 'UTF-8') {
-    const headBytes = bytes.slice(0, 4096);
-    const headAscii = new TextDecoder('ascii', { fatal: false }).decode(headBytes);
-    const charsetMatch = headAscii.match(/charset=["']?\s*([\w-]+)/i);
-    if (charsetMatch) {
-      const cs = charsetMatch[1].toLowerCase().replace(/[-_\s]/g, '');
+    const headAscii = new TextDecoder('ascii', { fatal: false }).decode(bytes.slice(0, 4096));
+    const m = headAscii.match(/charset=["']?\s*([\w-]+)/i);
+    if (m) {
+      const cs = m[1].toLowerCase().replace(/[-_\s]/g, '');
       if (cs === 'shiftjis' || cs === 'sjis' || cs === 'xsjis') encoding = 'Shift_JIS';
       else if (cs === 'eucjp' || cs === 'eucjpms') encoding = 'EUC-JP';
-    } else {
-      // 3. charset宣言なし → バイトパターンで判定
-      let sjisHits = 0;
-      const limit = Math.min(bytes.length - 1, 8192);
-      for (let i = 0; i < limit; i++) {
-        const b = bytes[i];
-        if ((b >= 0x81 && b <= 0x9F) || (b >= 0xE0 && b <= 0xEF)) {
-          const b2 = bytes[i + 1];
-          if (b2 >= 0x40 && b2 <= 0xFC && b2 !== 0x7F) {
-            sjisHits++;
-            i++;
-          }
-        }
-      }
-      if (sjisHits > 20) encoding = 'Shift_JIS';
     }
-  }
-
-  // 4. UTF-8で正常にデコードできるか確認（失敗したらShift_JISを試みる）
-  if (encoding === 'UTF-8') {
-    try {
-      const testDecoder = new TextDecoder('UTF-8', { fatal: true });
-      testDecoder.decode(bytes);
-    } catch(e) {
-      encoding = 'Shift_JIS';
-    }
+    // charset宣言があってutf-8 or 不明→UTF-8のまま
+    // 宣言なし→バイトパターンは使わない（誤判定多い）
   }
 
   try {
