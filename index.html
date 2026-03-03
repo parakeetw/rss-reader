@@ -1448,10 +1448,13 @@ const ARTICLE_SELECTORS = [
   // ID指定（優先度高）
   '#article-body', '#entry-body', '#main-article', '#post-body',
   '#article',
+  // ハムスター速報系（レスが本文）
+  '#comments-list', '#comments-wrapper',
   // FC2ブログ
   '#entry_body', '.entry_body', '#main_area .entry',
   '.entry-content-text', '#entryBody',
-  // WordPress系
+  // WordPress系・ドメサカ
+  '.section-article-first', '.article-first', '#post',
   '.entry-content', '.post-content', '.wp-post-content',
   // livedoor/doorblog系
   '.entry-body-text', '#ent-body', '.ent-body',
@@ -1472,9 +1475,7 @@ const COMMENT_SELECTORS = [
   '.comments', '.comment-list', '.comment_list', '.comment-area',
   '.comments-area', '.comment-section', '.comment-wrap', '.comment__list',
   '.comment__container', '.articleComment',
-  // ハムスター速報（hamusoku.com）- #comments-list > ol > li.comment-set
-  '#comments-list', '#comments-wrapper',
-  '.comment-set', '#commentaries', '.commentaries',
+  '#commentaries', '.commentaries',
   '#pcomment', '.pcomment', '#comment_area', '.comment_area',
   '#user_comments', '.user_comments', '#all-comment', '.all-comment',
   // jin115・livedoor系
@@ -1516,8 +1517,6 @@ const COMMENT_NOISE = [
   '.comments', '.comment-list', '.comment_list', '.comment-area',
   '.comment-section', '.comment-wrap', '.comment__list', '.comment__container',
   '#comment-form', '.comment-form', '.comment-respond', '#respond', '.respond',
-  // ハムスター速報
-  '#comments-list', '#comments-wrapper',
   // livedoor系・jin115
   '#blog-comment', '.blog-comment', '#blogComment',
   '#cmt', '.cmt', '#cmtlist', '.cmtlist',
