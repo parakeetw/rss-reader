@@ -1448,8 +1448,8 @@ const ARTICLE_SELECTORS = [
   // ID指定（優先度高）
   '#article-body', '#entry-body', '#main-article', '#post-body',
   '#article',
-  // ハムスター速報系（レスが本文）
-  '#comments-list', '#comments-wrapper',
+  // ハムスター速報
+  '.article-body-more', '.article-body-inner',
   // FC2ブログ
   '#entry_body', '.entry_body', '#main_area .entry',
   '.entry-content-text', '#entryBody',
@@ -2088,7 +2088,7 @@ function renderReader(article, cleanedArticle, cleanedComments, commentCount, og
   // 記事本文
   const contentEl = document.createElement('div');
   contentEl.className = 'reader-content';
-  contentEl.appendChild(cleanedArticle);
+  contentEl.appendChild(cleanedArticle.cloneNode ? cleanedArticle.cloneNode(true) : cleanedArticle);
   contentEl.style.fontSize = state.readerFontSize + 'px';
   body.appendChild(contentEl);
 
@@ -2096,7 +2096,7 @@ function renderReader(article, cleanedArticle, cleanedComments, commentCount, og
 
   // コメントセクション
   const commentBtn = document.getElementById('commentToggleBtn');
-  if (cleanedComments.length > 0) {
+  if (cleanedComments && cleanedComments.length > 0) {
     const commentsSection = document.createElement('div');
     commentsSection.className = 'comments-section hidden';
     commentsSection.id = 'commentsSection';
@@ -2337,7 +2337,7 @@ const RECOMMENDED_FEEDS = [
     { url: 'https://news.livedoor.com/topics/rss/spo.xml',  name: 'スポーツ' },
   ]},
   { category: '総合・ニュース系まとめ', feeds: [
-    { url: 'https://itainews.com/',                         name: '痛いニュース(ノ∀`)' },
+    { url: 'https://itainews.com/index.rdf',                         name: '痛いニュース(ノ∀`)' },
     { url: 'https://jin115.com/index.rdf',                  name: 'オレ的ゲーム速報@刃' },
     { url: 'http://blog.livedoor.jp/itsoku/',               name: 'IT速報' },
     { url: 'https://matometanews.com/index.rdf',             name: 'まとめたニュース' },
