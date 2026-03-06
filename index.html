@@ -1086,10 +1086,12 @@ const PROXIES = [
   'https://api.codetabs.com/v1/proxy?quest=',
 ];
 
+const PC_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+
 async function fetchWithTimeout(url, ms = 5000) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('timeout')), ms);
-    fetch(url).then(res => {
+    fetch(url, { headers: { 'User-Agent': PC_UA } }).then(res => {
       clearTimeout(timer);
       resolve(res);
     }).catch(e => {
@@ -1448,9 +1450,8 @@ const ARTICLE_SELECTORS = [
   // ID指定（優先度高）
   '#article-body', '#entry-body', '#main-article', '#post-body',
   '#article',
-  // ハムスター速報（PC版・スマホ版両対応）
+  // ハムスター速報
   '.article-body-more', '.article-body-inner',
-  '#bistro .ent-body', '#bistro #ent-body', '#bistro .entry-body',
   // FC2ブログ
   '#entry_body', '.entry_body', '#main_area .entry',
   '.entry-content-text', '#entryBody',
