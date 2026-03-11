@@ -2,424 +2,238 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>動作確認済みRSSフィード一覧 - RSSまとめスマートリーダー</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>RSSフィード一覧 - RSSまとめスマートリーダー</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:      #090909;
-  --bg2:     #111113;
-  --bg3:     #18181c;
-  --bg4:     #1f1f24;
-  --border:  #252528;
-  --border2: #2e2e34;
-  --accent:  #e8a020;
-  --accent2: #f0c060;
-  --text:    #e4e2dc;
-  --text2:   #a8a6a0;
-  --text3:   #606060;
-  --radius:  8px;
-  --font-serif: 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
-  --font-sans:  'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.6;
-  min-height: 100vh;
-}
-
-/* ヘッダー */
-.site-header {
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.site-header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.app-logo {
-  font-family: var(--font-serif);
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--accent);
-  line-height: 1.2;
-}
-
-.app-logo span {
-  display: block;
-  font-size: 10px;
-  font-family: var(--font-sans);
-  font-weight: 300;
-  color: var(--text3);
-  letter-spacing: 0.1em;
-}
-
-.open-app-btn {
-  padding: 8px 16px;
-  background: var(--accent);
-  color: var(--bg);
-  border: none;
-  border-radius: var(--radius);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-
-.open-app-btn:hover { background: var(--accent2); }
-
-/* メインコンテンツ */
-.main {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 32px 16px 64px;
-}
-
-.page-title {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-
-.page-desc {
-  font-size: 13px;
-  color: var(--text2);
-  margin-bottom: 32px;
-  line-height: 1.7;
-}
-
-/* カテゴリアコーディオン */
-.category {
-  margin-bottom: 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.category-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  background: var(--bg3);
-  cursor: pointer;
-  user-select: none;
-  gap: 12px;
-}
-
-.category-header:hover { background: var(--bg4); }
-
-.category-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text);
-}
-
-.category-icon { font-size: 16px; }
-
-.category-count {
-  font-size: 11px;
-  color: var(--text3);
-  margin-left: 4px;
-}
-
-.category-chevron {
-  font-size: 11px;
-  color: var(--text3);
-  transition: transform 0.2s;
-}
-
-.category.open .category-chevron { transform: rotate(180deg); }
-
-.category-body {
-  display: none;
-  background: var(--bg2);
-}
-
-.category.open .category-body { display: block; }
-
-/* RSSアイテム */
-.feed-row {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  border-top: 1px solid var(--border);
-  gap: 12px;
-}
-
-.feed-row:hover { background: var(--bg3); }
-
-.feed-favicon {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-  flex-shrink: 0;
-  object-fit: contain;
-  background: var(--bg4);
-}
-
-.feed-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.feed-name {
-  font-size: 13px;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.feed-url {
-  font-size: 11px;
-  color: var(--text3);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.add-btn {
-  padding: 6px 14px;
-  background: transparent;
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  border-radius: var(--radius);
-  font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: all 0.15s;
-}
-
-.add-btn:hover {
-  background: var(--accent);
-  color: var(--bg);
-}
-
-.add-btn.added {
-  background: var(--bg4);
-  border-color: var(--border2);
-  color: var(--text3);
-  cursor: default;
-}
-
-/* 注記 */
-.disclaimer {
-  margin-top: 40px;
-  padding: 16px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 11px;
-  color: var(--text3);
-  line-height: 1.8;
-}
-
-.disclaimer a { color: var(--text2); }
-
-/* トースト */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--bg4);
-  border: 1px solid var(--border2);
-  color: var(--text);
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-size: 13px;
-  transition: transform 0.3s ease;
-  z-index: 100;
-  white-space: nowrap;
-}
-
-.toast.show { transform: translateX(-50%) translateY(0); }
+:root{--bg:#f5f3ee;--bg2:#eceae4;--bg3:#e2e0d8;--bg4:#d8d6cc;--border:#d0cec4;--border2:#c4c2b8;--accent:#c07800;--accent2:#e09000;--text:#1a1a1a;--text2:#555550;--text3:#999990;--r:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:14px;min-height:100vh}
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.logo{font-family:'Noto Serif JP',serif;font-size:16px;font-weight:700;color:var(--accent)}
+.logo small{display:block;font-size:10px;font-family:'Noto Sans JP',sans-serif;color:var(--text3);letter-spacing:.1em;font-weight:300}
+.open-btn{padding:8px 18px;background:var(--accent);color:#000;border:none;border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer;text-decoration:none}
+.open-btn:hover{background:var(--accent2)}
+main{max-width:800px;margin:0 auto;padding:32px 16px 64px}
+h1{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:700;margin-bottom:6px}
+.desc{font-size:13px;color:var(--text2);margin-bottom:28px;line-height:1.7}
+.category{border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.cat-hdr{display:flex;align-items:center;gap:10px;padding:13px 16px;background:var(--bg3);cursor:pointer;user-select:none}
+.cat-hdr:hover{background:var(--bg4)}
+.cat-name{font-size:14px;font-weight:500;flex:1}
+.cat-count{font-size:11px;color:var(--text3)}
+.chevron{font-size:10px;color:var(--text3);transition:transform .2s}
+.category.open .chevron{transform:rotate(180deg)}
+.cat-body{display:none;background:var(--bg2)}
+.category.open .cat-body{display:block}
+.feed-row{display:flex;align-items:center;gap:10px;padding:11px 16px;border-top:1px solid var(--border)}
+.feed-row:hover{background:var(--bg3)}
+.fav{width:18px;height:18px;border-radius:3px;flex-shrink:0}
+.feed-info{flex:1;min-width:0}
+.feed-name{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed-url{font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.add-btn{padding:5px 14px;background:transparent;border:1px solid var(--accent);color:var(--accent);border-radius:5px;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit}
+.add-btn:hover{background:var(--accent);color:#000}
+.disclaimer{margin-top:36px;padding:14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);font-size:11px;color:var(--text3);line-height:1.8}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--bg4);border:1px solid var(--border2);color:var(--text);padding:9px 20px;border-radius:20px;font-size:13px;transition:transform .3s;z-index:999;pointer-events:none}
+#toast.show{transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
-
-<header class="site-header">
-  <div class="site-header-left">
-    <div class="app-logo">
-      RSSまとめスマートリーダー
-      <span>RSS MATOME SMART READER</span>
-    </div>
-  </div>
-  <a href="index.html" class="open-app-btn">📖 アプリを開く</a>
+<header>
+  <div class="logo">RSSまとめスマートリーダー<small>RSS MATOME SMART READER</small></div>
+  <a href="index.html" class="open-btn">&#128214; アプリを開く</a>
 </header>
+<main>
+  <h1>動作確認済みRSSフィード一覧</h1>
+  <p class="desc">「追加」ボタンをクリックするとアプリのURL入力欄にURLがセットされます。<br>そのまま「追加」ボタンを押して登録してください。</p>
 
-<main class="main">
-  <h1 class="page-title">動作確認済みRSSフィード一覧</h1>
-  <p class="page-desc">
-    以下のフィードはRSSまとめスマートリーダーでの動作を確認しています。<br>
-    「追加」ボタンをクリックするとアプリのURL入力欄にセットされます。そのまま「追加」ボタンを押して登録してください。
-  </p>
-
-  <div id="categoryList"></div>
-
-  <div class="disclaimer">
-    ※掲載されているサイトは動作確認用の例であり、本アプリとの公式な提携関係はありません。各コンテンツの著作権は、それぞれの配信元運営者に帰属します。掲載の取り下げを希望される運営者様は、お手数ですが <a href="mailto:">こちら</a> までご連絡ください。
+<div class="category open">
+  <div class="cat-hdr" onclick="this.parentElement.classList.toggle('open')">
+    <span class="cat-name">最新ニュース</span><span class="cat-count">4件</span><span class="chevron">&#9660;</span>
   </div>
-</main>
-
-<div class="toast" id="toast"></div>
-
-<script>
-const FEEDS = [
-  {
-    category: '最新ニュース',
-    icon: '📰',
-    feeds: [
-      { name: '日経新聞', url: 'https://assets.wor.jp/rss/rdf/nikkei/news.rdf' },
-      { name: 'ロイター', url: 'https://assets.wor.jp/rss/rdf/reuters/top.rdf' },
-      { name: '47NEWS', url: 'https://assets.wor.jp/rss/rdf/ynnews/news.rdf' },
-      { name: 'Yahooニュース', url: 'https://news.yahoo.co.jp/rss/topics/top-picks.xml' },
-    ]
-  },
-  {
-    category: 'エンタメ・スポーツ',
-    icon: '🎬',
-    feeds: [
-      { name: 'ORICON NEWS', url: 'https://assets.wor.jp/rss/rdf/oricon/top.rdf' },
-      { name: 'Yahoo!ニュース・エンタメ', url: 'https://news.yahoo.co.jp/rss/categories/entertainment.xml' },
-      { name: 'livedoorニュース・エンタメ', url: 'https://news.livedoor.com/topics/rss/ent.xml' },
-      { name: 'Yahoo!ニュース・スポーツ', url: 'https://news.yahoo.co.jp/rss/categories/sports.xml' },
-      { name: 'livedoorニュース・スポーツ', url: 'https://news.livedoor.com/topics/rss/spo.xml' },
-    ]
-  },
-  {
-    category: 'まとめブログ（総合）',
-    icon: '😂',
-    feeds: [
-      { name: '痛いニュース(ノ∀`)', url: 'https://itainews.com/index.rdf' },
-      { name: 'オレ的ゲーム速報＠刃', url: 'https://jin115.com/index.rdf' },
-      { name: 'ハムスター速報', url: 'https://hamusoku.com/index.rdf' },
-      { name: '哲学ニュース', url: 'https://nwknews.jp/index.rdf' },
-      { name: '不思議.net', url: 'http://world-fusigi.net/index.rdf' },
-      { name: 'ゴールデンタイムズ', url: 'http://blog.livedoor.jp/goldennews/index.rdf' },
-      { name: 'IT速報', url: 'http://blog.livedoor.jp/itsoku/index.rdf' },
-      { name: 'まとめたニュース', url: 'http://matometanews.com/index.rdf' },
-      { name: '大艦巨砲主義！', url: 'https://taikankyohou.com/index.rdf' },
-      { name: 'モナニュース', url: 'https://mona-news.com/index.rdf' },
-    ]
-  },
-  {
-    category: 'まとめブログ（特化）',
-    icon: '🎯',
-    feeds: [
-      { name: '市況かぶ全力２階建', url: 'https://kabumatome.doorblog.jp/index.rdf' },
-      { name: '投資ちゃんねる', url: 'https://toushichannel.net/index.rdf' },
-      { name: 'なんJ PRIDE', url: 'https://nanjpride.blog.jp/index.rdf' },
-      { name: 'ドメサカブログ', url: 'https://blog.domesoccer.jp/feed' },
-      { name: 'NO FOOTY NO LIFE', url: 'http://nofootynolife.net/?xml' },
-      { name: 'カイカイ反応通信', url: 'http://blog.livedoor.jp/kaikaihanno/index.rdf' },
-      { name: 'ダイエット速報＠2ちゃんねる', url: 'http://blog.livedoor.jp/diet2channel/index.rdf' },
-      { name: 'お料理速報', url: 'https://oryouri.2chblog.jp/index.rdf' },
-      { name: 'かぞくちゃんねる', url: 'https://kazokuchannel.doorblog.jp/index.rdf' },
-      { name: '結婚・恋愛ニュースぷらす', url: 'http://blog.livedoor.jp/kekkongo/index.rdf' },
-    ]
-  },
-];
-
-function getFavicon(url) {
-  try {
-    const host = new URL(url.startsWith('http') ? url : 'https://' + url).hostname;
-    return `https://www.google.com/s2/favicons?domain=${host}&sz=32`;
-  } catch { return ''; }
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-function addFeed(url, btn) {
-  // LocalStorageに追加予定URLを書き込んでからindex.htmlを開く
-  localStorage.setItem('rss_pending_url', url);
-  window.open('index.html', '_blank');
-  btn.textContent = '✓ セット済み';
-  btn.classList.add('added');
-  showToast('アプリが開きます。「追加」ボタンを押して登録してください');
-  setTimeout(() => {
-    btn.textContent = '追加';
-    btn.classList.remove('added');
-  }, 3000);
-}
-
-// レンダリング
-const container = document.getElementById('categoryList');
-
-FEEDS.forEach((cat, i) => {
-  const div = document.createElement('div');
-  div.className = 'category' + (i === 0 ? ' open' : '');
-
-  const header = document.createElement('div');
-  header.className = 'category-header';
-  header.innerHTML = `
-    <div class="category-title">
-      <span class="category-icon">${cat.icon}</span>
-      <span>${cat.category}</span>
-      <span class="category-count">${cat.feeds.length}件</span>
+  <div class="cat-body">
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=assets.wor.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">日経新聞</div><div class="feed-url">https://assets.wor.jp/rss/rdf/nikkei/news.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fassets.wor.jp%2Frss%2Frdf%2Fnikkei%2Fnews.rdf')" type="button">追加</button>
     </div>
-    <span class="category-chevron">▼</span>
-  `;
-  header.addEventListener('click', () => div.classList.toggle('open'));
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=assets.wor.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">ロイター</div><div class="feed-url">https://assets.wor.jp/rss/rdf/reuters/top.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fassets.wor.jp%2Frss%2Frdf%2Freuters%2Ftop.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=assets.wor.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">47NEWS</div><div class="feed-url">https://assets.wor.jp/rss/rdf/ynnews/news.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fassets.wor.jp%2Frss%2Frdf%2Fynnews%2Fnews.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=news.yahoo.co.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">Yahooニュース</div><div class="feed-url">https://news.yahoo.co.jp/rss/topics/top-picks.xml</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fnews.yahoo.co.jp%2Frss%2Ftopics%2Ftop-picks.xml')" type="button">追加</button>
+    </div>
+  </div>
+</div>
+<div class="category">
+  <div class="cat-hdr" onclick="this.parentElement.classList.toggle('open')">
+    <span class="cat-name">エンタメ・スポーツ</span><span class="cat-count">5件</span><span class="chevron">&#9660;</span>
+  </div>
+  <div class="cat-body">
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=assets.wor.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">ORICON NEWS</div><div class="feed-url">https://assets.wor.jp/rss/rdf/oricon/top.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fassets.wor.jp%2Frss%2Frdf%2Foricon%2Ftop.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=news.yahoo.co.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">Yahoo!ニュース・エンタメ</div><div class="feed-url">https://news.yahoo.co.jp/rss/categories/entertainment.xml</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fnews.yahoo.co.jp%2Frss%2Fcategories%2Fentertainment.xml')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=news.livedoor.com&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">livedoorニュース・エンタメ</div><div class="feed-url">https://news.livedoor.com/topics/rss/ent.xml</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fnews.livedoor.com%2Ftopics%2Frss%2Fent.xml')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=news.yahoo.co.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">Yahoo!ニュース・スポーツ</div><div class="feed-url">https://news.yahoo.co.jp/rss/categories/sports.xml</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fnews.yahoo.co.jp%2Frss%2Fcategories%2Fsports.xml')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=news.livedoor.com&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">livedoorニュース・スポーツ</div><div class="feed-url">https://news.livedoor.com/topics/rss/spo.xml</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fnews.livedoor.com%2Ftopics%2Frss%2Fspo.xml')" type="button">追加</button>
+    </div>
+  </div>
+</div>
+<div class="category">
+  <div class="cat-hdr" onclick="this.parentElement.classList.toggle('open')">
+    <span class="cat-name">まとめブログ（総合）</span><span class="cat-count">10件</span><span class="chevron">&#9660;</span>
+  </div>
+  <div class="cat-body">
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=itainews.com&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">痛いニュース(ノ∀`)</div><div class="feed-url">https://itainews.com/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fitainews.com%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=jin115.com&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">オレ的ゲーム速報＠刃</div><div class="feed-url">https://jin115.com/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fjin115.com%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=hamusoku.com&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">ハムスター速報</div><div class="feed-url">https://hamusoku.com/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fhamusoku.com%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=nwknews.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">哲学ニュース</div><div class="feed-url">https://nwknews.jp/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fnwknews.jp%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=world-fusigi.net&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">不思議.net</div><div class="feed-url">https://world-fusigi.net/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fworld-fusigi.net%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=blog.livedoor.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">ゴールデンタイムズ</div><div class="feed-url">http://blog.livedoor.jp/goldennews/index.rdf</div></div>
+      <button class="add-btn" onclick="go('http%3A%2F%2Fblog.livedoor.jp%2Fgoldennews%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=blog.livedoor.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">IT速報</div><div class="feed-url">http://blog.livedoor.jp/itsoku/index.rdf</div></div>
+      <button class="add-btn" onclick="go('http%3A%2F%2Fblog.livedoor.jp%2Fitsoku%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=matometanews.com&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">まとめたニュース</div><div class="feed-url">https://matometanews.com/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fmatometanews.com%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=taikankyohou.com&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">大艦巨砲主義！</div><div class="feed-url">https://taikankyohou.com/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Ftaikankyohou.com%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=mona-news.com&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">モナニュース</div><div class="feed-url">https://mona-news.com/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fmona-news.com%2Findex.rdf')" type="button">追加</button>
+    </div>
+  </div>
+</div>
+<div class="category">
+  <div class="cat-hdr" onclick="this.parentElement.classList.toggle('open')">
+    <span class="cat-name">まとめブログ（特化）</span><span class="cat-count">10件</span><span class="chevron">&#9660;</span>
+  </div>
+  <div class="cat-body">
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=kabumatome.doorblog.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">市況かぶ全力２階建</div><div class="feed-url">https://kabumatome.doorblog.jp/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fkabumatome.doorblog.jp%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=toushichannel.net&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">投資ちゃんねる</div><div class="feed-url">https://toushichannel.net/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Ftoushichannel.net%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=nanjpride.blog.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">なんJ PRIDE</div><div class="feed-url">https://nanjpride.blog.jp/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fnanjpride.blog.jp%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=blog.domesoccer.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">ドメサカブログ</div><div class="feed-url">https://blog.domesoccer.jp/feed</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fblog.domesoccer.jp%2Ffeed')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=nofootynolife.net&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">NO FOOTY NO LIFE</div><div class="feed-url">http://nofootynolife.net/?xml</div></div>
+      <button class="add-btn" onclick="go('http%3A%2F%2Fnofootynolife.net%2F%3Fxml')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=blog.livedoor.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">カイカイ反応通信</div><div class="feed-url">http://blog.livedoor.jp/kaikaihanno/index.rdf</div></div>
+      <button class="add-btn" onclick="go('http%3A%2F%2Fblog.livedoor.jp%2Fkaikaihanno%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=blog.livedoor.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">ダイエット速報＠2ちゃんねる</div><div class="feed-url">http://blog.livedoor.jp/diet2channel/index.rdf</div></div>
+      <button class="add-btn" onclick="go('http%3A%2F%2Fblog.livedoor.jp%2Fdiet2channel%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=oryouri.2chblog.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">お料理速報</div><div class="feed-url">https://oryouri.2chblog.jp/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Foryouri.2chblog.jp%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=kazokuchannel.doorblog.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">かぞくちゃんねる</div><div class="feed-url">https://kazokuchannel.doorblog.jp/index.rdf</div></div>
+      <button class="add-btn" onclick="go('https%3A%2F%2Fkazokuchannel.doorblog.jp%2Findex.rdf')" type="button">追加</button>
+    </div>
+    <div class="feed-row">
+      <img class="fav" src="https://www.google.com/s2/favicons?domain=blog.livedoor.jp&sz=32" onerror="this.style.display='none'" alt="">
+      <div class="feed-info"><div class="feed-name">結婚・恋愛ニュースぷらす</div><div class="feed-url">http://blog.livedoor.jp/kekkongo/index.rdf</div></div>
+      <button class="add-btn" onclick="go('http%3A%2F%2Fblog.livedoor.jp%2Fkekkongo%2Findex.rdf')" type="button">追加</button>
+    </div>
+  </div>
+</div>
 
-  const body = document.createElement('div');
-  body.className = 'category-body';
-
-  cat.feeds.forEach(feed => {
-    const row = document.createElement('div');
-    row.className = 'feed-row';
-    row.innerHTML = `
-      <img class="feed-favicon" src="${getFavicon(feed.url)}" alt="" onerror="this.style.display='none'">
-      <div class="feed-info">
-        <div class="feed-name">${feed.name}</div>
-        <div class="feed-url">${feed.url}</div>
-      </div>
-      <button class="add-btn">追加</button>
-    `;
-    row.querySelector('.add-btn').addEventListener('click', function() {
-      addFeed(feed.url, this);
-    });
-    body.appendChild(row);
-  });
-
-  div.appendChild(header);
-  div.appendChild(body);
-  container.appendChild(div);
-});
+  <div class="disclaimer">※掲載されているサイトは動作確認用の例であり、本アプリとの公式な提携関係はありません。各コンテンツの著作権は、それぞれの配信元運営者に帰属します。</div>
+</main>
+<div id="toast"></div>
+<script>
+function go(encodedUrl) {
+  var t = document.getElementById('toast');
+  t.textContent = 'アプリに移動します...';
+  t.classList.add('show');
+  setTimeout(function() {
+    window.location.href = 'index.html#add=' + encodedUrl;
+  }, 500);
+}
 </script>
 </body>
 </html>
