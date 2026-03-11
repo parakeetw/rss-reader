@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>動作確認済みRSSフィード一覧 - RSSまとめスマートリーダー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #090909;
+  --bg2:     #111113;
+  --bg3:     #18181c;
+  --bg4:     #1f1f24;
+  --border:  #252528;
+  --border2: #2e2e34;
+  --accent:  #e8a020;
+  --accent2: #f0c060;
+  --text:    #e4e2dc;
+  --text2:   #a8a6a0;
+  --text3:   #606060;
+  --radius:  8px;
+  --font-serif: 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
+  --font-sans:  'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ヘッダー */
+.site-header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.site-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-logo {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+
+.app-logo span {
+  display: block;
+  font-size: 10px;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+}
+
+.open-app-btn {
+  padding: 8px 16px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.open-app-btn:hover { background: var(--accent2); }
+
+/* メインコンテンツ */
+.main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+}
+
+.page-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.page-desc {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 32px;
+  line-height: 1.7;
+}
+
+/* カテゴリアコーディオン */
+.category {
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg3);
+  cursor: pointer;
+  user-select: none;
+  gap: 12px;
+}
+
+.category-header:hover { background: var(--bg4); }
+
+.category-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.category-icon { font-size: 16px; }
+
+.category-count {
+  font-size: 11px;
+  color: var(--text3);
+  margin-left: 4px;
+}
+
+.category-chevron {
+  font-size: 11px;
+  color: var(--text3);
+  transition: transform 0.2s;
+}
+
+.category.open .category-chevron { transform: rotate(180deg); }
+
+.category-body {
+  display: none;
+  background: var(--bg2);
+}
+
+.category.open .category-body { display: block; }
+
+/* RSSアイテム */
+.feed-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  gap: 12px;
+}
+
+.feed-row:hover { background: var(--bg3); }
+
+.feed-favicon {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  object-fit: contain;
+  background: var(--bg4);
+}
+
+.feed-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.feed-name {
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.feed-url {
+  font-size: 11px;
+  color: var(--text3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.add-btn {
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: var(--radius);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.add-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.add-btn.added {
+  background: var(--bg4);
+  border-color: var(--border2);
+  color: var(--text3);
+  cursor: default;
+}
+
+/* 注記 */
+.disclaimer {
+  margin-top: 40px;
+  padding: 16px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.8;
+}
+
+.disclaimer a { color: var(--text2); }
+
+/* トースト */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--bg4);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  transition: transform 0.3s ease;
+  z-index: 100;
+  white-space: nowrap;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-left">
+    <div class="app-logo">
+      RSSまとめスマートリーダー
+      <span>RSS MATOME SMART READER</span>
+    </div>
+  </div>
+  <a href="index.html" class="open-app-btn">📖 アプリを開く</a>
+</header>
+
+<main class="main">
+  <h1 class="page-title">動作確認済みRSSフィード一覧</h1>
+  <p class="page-desc">
+    以下のフィードはRSSまとめスマートリーダーでの動作を確認しています。<br>
+    「追加」ボタンをクリックするとアプリのURL入力欄にセットされます。そのまま「追加」ボタンを押して登録してください。
+  </p>
+
+  <div id="categoryList"></div>
+
+  <div class="disclaimer">
+    ※掲載されているサイトは動作確認用の例であり、本アプリとの公式な提携関係はありません。各コンテンツの著作権は、それぞれの配信元運営者に帰属します。掲載の取り下げを希望される運営者様は、お手数ですが <a href="mailto:">こちら</a> までご連絡ください。
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FEEDS = [
+  {
+    category: '最新ニュース',
+    icon: '📰',
+    feeds: [
+      { name: '日経新聞', url: 'https://assets.wor.jp/rss/rdf/nikkei/news.rdf' },
+      { name: 'ロイター', url: 'https://assets.wor.jp/rss/rdf/reuters/top.rdf' },
+      { name: '47NEWS', url: 'https://assets.wor.jp/rss/rdf/ynnews/news.rdf' },
+      { name: 'Yahooニュース', url: 'https://news.yahoo.co.jp/rss/topics/top-picks.xml' },
+    ]
+  },
+  {
+    category: 'エンタメ・スポーツ',
+    icon: '🎬',
+    feeds: [
+      { name: 'ORICON NEWS', url: 'https://assets.wor.jp/rss/rdf/oricon/top.rdf' },
+      { name: 'Yahoo!ニュース・エンタメ', url: 'https://news.yahoo.co.jp/rss/categories/entertainment.xml' },
+      { name: 'livedoorニュース・エンタメ', url: 'https://news.livedoor.com/topics/rss/ent.xml' },
+      { name: 'Yahoo!ニュース・スポーツ', url: 'https://news.yahoo.co.jp/rss/categories/sports.xml' },
+      { name: 'livedoorニュース・スポーツ', url: 'https://news.livedoor.com/topics/rss/spo.xml' },
+    ]
+  },
+  {
+    category: 'まとめブログ（総合）',
+    icon: '😂',
+    feeds: [
+      { name: '痛いニュース(ノ∀`)', url: 'https://itainews.com/index.rdf' },
+      { name: 'オレ的ゲーム速報＠刃', url: 'https://jin115.com/index.rdf' },
+      { name: 'ハムスター速報', url: 'https://hamusoku.com/index.rdf' },
+      { name: '哲学ニュース', url: 'https://nwknews.jp/index.rdf' },
+      { name: '不思議.net', url: 'http://world-fusigi.net/index.rdf' },
+      { name: 'ゴールデンタイムズ', url: 'http://blog.livedoor.jp/goldennews/index.rdf' },
+      { name: 'IT速報', url: 'http://blog.livedoor.jp/itsoku/index.rdf' },
+      { name: 'まとめたニュース', url: 'http://matometanews.com/index.rdf' },
+      { name: '大艦巨砲主義！', url: 'https://taikankyohou.com/index.rdf' },
+      { name: 'モナニュース', url: 'https://mona-news.com/index.rdf' },
+    ]
+  },
+  {
+    category: 'まとめブログ（特化）',
+    icon: '🎯',
+    feeds: [
+      { name: '市況かぶ全力２階建', url: 'https://kabumatome.doorblog.jp/index.rdf' },
+      { name: '投資ちゃんねる', url: 'https://toushichannel.net/index.rdf' },
+      { name: 'なんJ PRIDE', url: 'https://nanjpride.blog.jp/index.rdf' },
+      { name: 'ドメサカブログ', url: 'https://blog.domesoccer.jp/feed' },
+      { name: 'NO FOOTY NO LIFE', url: 'http://nofootynolife.net/?xml' },
+      { name: 'カイカイ反応通信', url: 'http://blog.livedoor.jp/kaikaihanno/index.rdf' },
+      { name: 'ダイエット速報＠2ちゃんねる', url: 'http://blog.livedoor.jp/diet2channel/index.rdf' },
+      { name: 'お料理速報', url: 'https://oryouri.2chblog.jp/index.rdf' },
+      { name: 'かぞくちゃんねる', url: 'https://kazokuchannel.doorblog.jp/index.rdf' },
+      { name: '結婚・恋愛ニュースぷらす', url: 'http://blog.livedoor.jp/kekkongo/index.rdf' },
+    ]
+  },
+];
+
+function getFavicon(url) {
+  try {
+    const host = new URL(url.startsWith('http') ? url : 'https://' + url).hostname;
+    return `https://www.google.com/s2/favicons?domain=${host}&sz=32`;
+  } catch { return ''; }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function addFeed(url, btn) {
+  // LocalStorageに追加予定URLを書き込んでからindex.htmlを開く
+  localStorage.setItem('rss_pending_url', url);
+  window.open('index.html', '_blank');
+  btn.textContent = '✓ セット済み';
+  btn.classList.add('added');
+  showToast('アプリが開きます。「追加」ボタンを押して登録してください');
+  setTimeout(() => {
+    btn.textContent = '追加';
+    btn.classList.remove('added');
+  }, 3000);
+}
+
+// レンダリング
+const container = document.getElementById('categoryList');
+
+FEEDS.forEach((cat, i) => {
+  const div = document.createElement('div');
+  div.className = 'category' + (i === 0 ? ' open' : '');
+
+  const header = document.createElement('div');
+  header.className = 'category-header';
+  header.innerHTML = `
+    <div class="category-title">
+      <span class="category-icon">${cat.icon}</span>
+      <span>${cat.category}</span>
+      <span class="category-count">${cat.feeds.length}件</span>
+    </div>
+    <span class="category-chevron">▼</span>
+  `;
+  header.addEventListener('click', () => div.classList.toggle('open'));
+
+  const body = document.createElement('div');
+  body.className = 'category-body';
+
+  cat.feeds.forEach(feed => {
+    const row = document.createElement('div');
+    row.className = 'feed-row';
+    row.innerHTML = `
+      <img class="feed-favicon" src="${getFavicon(feed.url)}" alt="" onerror="this.style.display='none'">
+      <div class="feed-info">
+        <div class="feed-name">${feed.name}</div>
+        <div class="feed-url">${feed.url}</div>
+      </div>
+      <button class="add-btn">追加</button>
+    `;
+    row.querySelector('.add-btn').addEventListener('click', function() {
+      addFeed(feed.url, this);
+    });
+    body.appendChild(row);
+  });
+
+  div.appendChild(header);
+  div.appendChild(body);
+  container.appendChild(div);
+});
+</script>
+</body>
+</html>

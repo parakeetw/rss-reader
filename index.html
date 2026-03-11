@@ -976,7 +976,7 @@ body.light {
         <button class="add-feed-btn" id="addFeedBtn">追加</button>
       </div>
       <p class="add-feed-hint">例：RSSのURLでもサイトのURLでもOK</p>
-      <button class="recommended-btn" id="openRecommendedBtn">📋 おすすめフィードを追加</button>
+      <a href="sample.html" target="_blank" class="recommended-btn" style="display:block;text-align:center;text-decoration:none;">📋 サンプルRSSフィード一覧</a>
     </div>
   </div>
 
@@ -2376,6 +2376,18 @@ async function init() {
   initEvents();
   renderFeedList();
   renderArticleList();
+
+  // sample.htmlからのRSSセット（localStorage経由）
+  const pendingUrl = localStorage.getItem('rss_pending_url');
+  if (pendingUrl) {
+    localStorage.removeItem('rss_pending_url');
+    const input = document.getElementById('feedUrlInput');
+    if (input) {
+      input.value = pendingUrl;
+      input.focus();
+      showToast('URLをセットしました。「追加」ボタンを押して登録してください');
+    }
+  }
 
   // フィードが空なら案内だけ表示
   if (state.feeds.length === 0) {
