@@ -4,320 +4,498 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RSSまとめスマートリーダー 使い方ガイド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #090909;
-  --bg2: #111113;
-  --bg3: #18181c;
-  --border: #252528;
-  --accent: #e8a020;
-  --text: #e4e2dc;
-  --text2: #a8a6a0;
-  --text3: #606060;
-  --blue: #6aaae0;
+  --bg:       #f5f3ee;
+  --bg2:      #eceae4;
+  --bg3:      #e2e0d8;
+  --bg4:      #d8d6cc;
+  --border:   #d0cec4;
+  --border2:  #c4c2b8;
+  --accent:   #c07800;
+  --accent2:  #e09000;
+  --text:     #1a1a1a;
+  --text2:    #555550;
+  --text3:    #999990;
+  --blue:     #1a60b0;
+  --radius:   10px;
+  --font-serif: 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
+  --font-sans:  'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  font-family: var(--font-sans);
   font-size: 15px;
-  line-height: 1.8;
-  padding: 0 0 60px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
 }
-.hero {
-  background: linear-gradient(135deg, #111113 0%, #1a1a1e 100%);
+
+a { color: var(--blue); }
+
+/* ヘッダー */
+.site-header {
+  background: var(--bg2);
   border-bottom: 1px solid var(--border);
-  padding: 48px 24px 40px;
-  text-align: center;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
-.hero-title {
-  font-size: 26px;
+
+.app-logo {
+  font-family: var(--font-serif);
+  font-size: 15px;
   font-weight: 700;
   color: var(--accent);
-  margin-bottom: 8px;
-  letter-spacing: 0.05em;
+  line-height: 1.2;
 }
-.hero-sub {
-  font-size: 13px;
-  color: var(--text2);
+
+.app-logo span {
+  display: block;
+  font-size: 9px;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  color: var(--text3);
   letter-spacing: 0.1em;
 }
-.hero-badge {
-  display: inline-block;
-  margin-top: 16px;
-  padding: 6px 16px;
-  background: var(--accent);
-  color: #000;
-  border-radius: 20px;
+
+.header-label {
   font-size: 12px;
+  color: var(--text3);
+  letter-spacing: 0.06em;
+}
+
+.open-btn {
+  padding: 8px 18px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 13px;
   font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
 }
-.container {
-  max-width: 720px;
+
+.open-btn:hover { background: var(--accent2); color: #fff; }
+
+/* コンテンツ */
+.wrap {
+  max-width: 760px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 48px 20px 80px;
 }
+
+.page-eyebrow {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+
+.page-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 40px;
+  line-height: 1.4;
+}
+
+/* セクション */
 .section {
-  margin-top: 48px;
+  margin-bottom: 56px;
 }
+
 .section-title {
+  font-family: var(--font-serif);
   font-size: 18px;
   font-weight: 700;
-  color: var(--accent);
-  border-left: 3px solid var(--accent);
-  padding-left: 12px;
+  color: var(--text);
   margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--accent);
 }
+
+/* 基本手順カード */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .step {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 12px;
   display: flex;
   gap: 16px;
+  padding: 18px 20px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   align-items: flex-start;
 }
+
 .step-num {
   width: 32px;
   height: 32px;
-  background: var(--accent);
-  color: #000;
   border-radius: 50%;
-  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
   font-size: 14px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-top: 1px;
 }
+
 .step-body h3 {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
-  margin-bottom: 4px;
   color: var(--text);
+  margin-bottom: 5px;
 }
+
 .step-body p {
   font-size: 13px;
   color: var(--text2);
-  line-height: 1.7;
+  line-height: 1.75;
 }
-.tip {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--blue);
-  border-radius: 6px;
-  padding: 14px 16px;
-  margin-bottom: 10px;
-  font-size: 13px;
-  color: var(--text2);
-}
-.tip strong { color: var(--blue); }
+
+/* 機能グリッド */
 .feature-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
 }
-@media (max-width: 480px) {
-  .feature-grid { grid-template-columns: 1fr; }
-}
+
 .feature-card {
+  padding: 18px 18px 16px;
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px;
+  border-radius: var(--radius);
 }
+
 .feature-icon {
-  font-size: 24px;
-  margin-bottom: 8px;
+  font-size: 22px;
+  margin-bottom: 10px;
+  display: block;
+  line-height: 1;
 }
+
 .feature-card h3 {
   font-size: 13px;
   font-weight: 700;
-  margin-bottom: 4px;
   color: var(--text);
+  margin-bottom: 6px;
 }
+
 .feature-card p {
   font-size: 12px;
   color: var(--text2);
-  line-height: 1.6;
+  line-height: 1.7;
 }
-.faq-item {
-  border-bottom: 1px solid var(--border);
-  padding: 16px 0;
+
+/* スマホ追加手順 */
+.os-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
-.faq-q {
+
+.os-card {
+  padding: 18px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.os-card h3 {
+  font-size: 13px;
   font-weight: 700;
   color: var(--accent);
-  margin-bottom: 6px;
-  font-size: 14px;
+  margin-bottom: 10px;
 }
+
+.os-card ol {
+  padding-left: 18px;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.9;
+}
+
+/* FAQ */
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  padding: 18px 20px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.faq-q {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.faq-q::before {
+  content: 'Q';
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
 .faq-a {
   font-size: 13px;
   color: var(--text2);
-  line-height: 1.7;
+  line-height: 1.75;
+  padding-left: 28px;
 }
+
+/* CTAバナー */
 .cta {
-  background: var(--bg2);
+  margin-top: 56px;
+  padding: 36px 32px;
+  background: linear-gradient(135deg, var(--bg3) 0%, var(--bg2) 100%);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 28px;
+  border-radius: 14px;
   text-align: center;
-  margin-top: 48px;
 }
+
 .cta-title {
-  font-size: 16px;
+  font-family: var(--font-serif);
+  font-size: 20px;
   font-weight: 700;
+  color: var(--text);
   margin-bottom: 8px;
 }
+
+.cta-sub {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 22px;
+}
+
 .cta-btn {
   display: inline-block;
-  margin-top: 16px;
-  padding: 12px 32px;
+  padding: 12px 36px;
   background: var(--accent);
-  color: #000;
+  color: #fff;
   border-radius: 8px;
+  font-size: 15px;
   font-weight: 700;
-  font-size: 14px;
   text-decoration: none;
+  transition: background 0.15s;
+}
+
+.cta-btn:hover { background: var(--accent2); color: #fff; }
+
+/* レスポンシブ */
+@media (max-width: 600px) {
+  .page-title { font-size: 22px; }
+  .os-cards { grid-template-columns: 1fr; }
+  .feature-grid { grid-template-columns: 1fr 1fr; }
+  .wrap { padding: 32px 16px 60px; }
 }
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <div class="hero-title">RSSまとめスマートリーダー</div>
-  <div class="hero-sub">RSS MATOME SMART READER</div>
-  <div class="hero-badge">📖 使い方ガイド</div>
-</div>
-
-<div class="container">
-
-  <!-- 基本の使い方 -->
-  <div class="section">
-    <div class="section-title">基本の使い方</div>
-
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <h3>フィードを追加する</h3>
-        <p>左パネル下部の入力欄にRSSのURLを入力して「追加」ボタンを押します。サイトのURLを入力するだけでも自動でRSSを検出します。</p>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <h3>おすすめフィードから追加する</h3>
-        <p>「📋 おすすめフィードを追加」ボタンを押すと、人気のまとめブログ28サイトが一覧表示されます。気になるサイトの「追加」ボタンを押すだけで登録できます。</p>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <h3>記事を読む</h3>
-        <p>中央の記事一覧から読みたい記事をクリックすると、右パネルにリーダーモードで表示されます。クリーンな表示でスマートに読めます。</p>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-body">
-        <h3>コメントを見る</h3>
-        <p>記事上部の「💬 コメント」ボタンを押すとコメント欄が表示されます。もう一度押すと非表示になります。</p>
-      </div>
-    </div>
+<header class="site-header">
+  <div class="app-logo">
+    RSSまとめスマートリーダー
+    <span>RSS MATOME SMART READER</span>
   </div>
+  <span class="header-label">&#128214; 使い方ガイド</span>
+  <a href="index.html" class="open-btn">アプリを開く</a>
+</header>
 
-  <!-- 機能一覧 -->
-  <div class="section">
-    <div class="section-title">主な機能</div>
+<div class="wrap">
+  <p class="page-eyebrow">HOW TO USE</p>
+  <h1 class="page-title">使い方ガイド</h1>
+
+  <!-- 基本手順 -->
+  <section class="section">
+    <h2 class="section-title">基本の使い方</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>フィードを追加する</h3>
+          <p>左パネル下部の入力欄にRSSのURLを入力して「追加」ボタンを押します。サイトのURLを入力するだけでも自動でRSSを検出します。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>サンプルRSSフィード一覧から追加する</h3>
+          <p>「📋 サンプルRSSフィード一覧」ボタンを押すと、動作確認済みのRSSフィードを別ページで確認できます。気になるサイトの「追加」ボタンを押すとアプリに戻り自動登録されます。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>フィードの順番を並び替える</h3>
+          <p>「↕ フィードの並び替え」ボタンを押すと登録済みフィードの一覧が表示されます。各フィードを上下にドラッグすると順番を入れ替えられます。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>記事を読む</h3>
+          <p>中央の記事一覧から読みたい記事をクリックすると、右パネルにリーダーモードで表示されます。クリーンな表示で快適に読めます。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h3>コメントを見る</h3>
+          <p>まとめブログなどでは、記事ヘッダーの「&#128172; コメント」ボタンでコメント欄を表示できます。もう一度押すと非表示になります。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 主な機能 -->
+  <section class="section">
+    <h2 class="section-title">主な機能</h2>
     <div class="feature-grid">
       <div class="feature-card">
-        <div class="feature-icon">🌙</div>
+        <span class="feature-icon">&#127769;</span>
         <h3>ダーク / ライトテーマ</h3>
         <p>左上の☾ボタンでテーマを切り替えられます。設定は次回起動時も維持されます。</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🔄</div>
+        <span class="feature-icon">&#8635;</span>
         <h3>フィード更新</h3>
         <p>中央パネル上部の「↺ 更新」ボタンで最新記事を取得できます。</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🔤</div>
+        <span class="feature-icon">&#128292;</span>
         <h3>文字サイズ変更</h3>
         <p>記事ヘッダーの「A-」「A+」ボタンで文字の大きさを変えられます。</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🔗</div>
+        <span class="feature-icon">&#128279;</span>
         <h3>元記事を開く</h3>
         <p>「元記事 →」ボタンで元サイトをブラウザで開けます。</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">📱</div>
-        <h3>スマホ対応</h3>
-        <p>iPhoneでもAndroidでも使えます。ホーム画面に追加するとアプリのように起動できます。</p>
+        <span class="feature-icon">&#8597;</span>
+        <h3>フィード並び替え</h3>
+        <p>登録済みフィードをドラッグ＆ドロップで自由に並び替えられます。順番は自動保存されます。</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">💾</div>
+        <span class="feature-icon">&#128241;</span>
+        <h3>スマホ対応</h3>
+        <p>iPhone・Androidどちらでも使えます。ホーム画面に追加するとアプリのように起動できます。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">&#128190;</span>
         <h3>設定の自動保存</h3>
-        <p>追加したフィードや既読情報はブラウザに自動保存されます。次回開いたときも引き継がれます。</p>
+        <p>追加したフィードや既読情報はブラウザに自動保存されます。次回も引き継がれます。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">&#128172;</span>
+        <h3>コメント表示</h3>
+        <p>まとめブログのコメント欄をリーダー内で確認できます。ボタンで表示・非表示を切り替えられます。</p>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- スマホでのホーム画面追加 -->
-  <div class="section">
-    <div class="section-title">スマホのホーム画面に追加する方法</div>
-
-    <div class="tip">
-      <strong>iPhone（Safari）</strong><br>
-      Safariでアプリを開く → 下部の共有ボタン（四角＋矢印）をタップ → 「ホーム画面に追加」→「追加」
+  <!-- スマホ追加手順 -->
+  <section class="section">
+    <h2 class="section-title">スマホのホーム画面に追加する</h2>
+    <div class="os-cards">
+      <div class="os-card">
+        <h3>&#63743; iPhone（Safari）</h3>
+        <ol>
+          <li>Safariでアプリを開く</li>
+          <li>下部の共有ボタン（四角＋矢印）をタップ</li>
+          <li>「ホーム画面に追加」をタップ</li>
+          <li>「追加」をタップ</li>
+        </ol>
+      </div>
+      <div class="os-card">
+        <h3>&#9654; Android（Chrome）</h3>
+        <ol>
+          <li>Chromeでアプリを開く</li>
+          <li>右上のメニュー（&#8942;）をタップ</li>
+          <li>「ホーム画面に追加」または「アプリをインストール」をタップ</li>
+          <li>確認画面で「追加」をタップ</li>
+        </ol>
+      </div>
     </div>
-    <div class="tip">
-      <strong>Android（Chrome）</strong><br>
-      Chromeでアプリを開く → 右上のメニュー（⋮）→「ホーム画面に追加」または「アプリをインストール」
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <h2 class="section-title">よくある質問</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">記事が取得できないサイトがあります</div>
+        <div class="faq-a">CORSプロキシ経由でRSSを取得しているため、一時的に失敗することがあります。「↺ 更新」ボタンを押して再試行してください。時間をおくと取得できることが多いです。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">フィードを削除したい</div>
+        <div class="faq-a">左パネルのフィード名にマウスを乗せると右端に「✕」ボタンが表示されます。タップ・クリックで削除できます。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">フィードの順番を変えたい</div>
+        <div class="faq-a">左パネル下部の「↕ フィードの並び替え」ボタンを押すと並び替えパネルが開きます。フィードをドラッグして好きな順番に並べ替えてください。自動で保存されます。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">記事の内容が正しく表示されない</div>
+        <div class="faq-a">一部のサイトはCORS制限により記事本文が取得できない場合があります。「元記事 →」ボタンから元サイトでご覧ください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">追加したフィードが消えた</div>
+        <div class="faq-a">ブラウザのキャッシュ・履歴を削除するとフィード情報も消えることがあります。シークレットモードでは保存されません。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">無料で使えますか？</div>
+        <div class="faq-a">完全無料です。登録不要でそのまま使えます。</div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <!-- よくある質問 -->
-  <div class="section">
-    <div class="section-title">よくある質問</div>
-
-    <div class="faq-item">
-      <div class="faq-q">Q. 記事が取得できないサイトがあります</div>
-      <div class="faq-a">CORSプロキシ経由でRSSを取得しているため、一時的に失敗することがあります。「↺ 更新」ボタンを押して再試行してください。時間をおくと取得できることが多いです。</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">Q. フィードを削除したい</div>
-      <div class="faq-a">左パネルのフィード名にマウスを乗せると右端に「✕」ボタンが表示されます。タップ・クリックで削除できます。</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">Q. 記事の内容が正しく表示されない</div>
-      <div class="faq-a">一部のサイトはCORS制限により記事本文が取得できない場合があります。「元記事 →」ボタンから元サイトでご覧ください。</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">Q. 追加したフィードが消えた</div>
-      <div class="faq-a">ブラウザのキャッシュ・履歴を削除するとフィード情報も消えることがあります。シークレットモードでは保存されません。</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q">Q. 無料で使えますか？</div>
-      <div class="faq-a">完全無料です。登録不要でそのまま使えます。</div>
-    </div>
-  </div>
-
+  <!-- CTA -->
   <div class="cta">
     <div class="cta-title">さっそく使ってみよう</div>
-    <p style="font-size:13px;color:var(--text2)">登録不要・完全無料・スマートに読める</p>
-    <a class="cta-btn" href="https://parakeetw.github.io/rss-reader/" target="_blank">アプリを開く →</a>
+    <div class="cta-sub">登録不要・完全無料・スマートに読める</div>
+    <a href="index.html" class="cta-btn">アプリを開く →</a>
   </div>
-
 </div>
+
 </body>
 </html>
