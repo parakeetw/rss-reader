@@ -1088,6 +1088,7 @@ const Storage = {
 // CORS プロキシ経由でフェッチ
 // ================================================
 const PROXIES = [
+  'https://rss-proxy.parakeet-w.workers.dev/?url=',
   'https://corsproxy.io/?',
   'https://api.allorigins.win/raw?url=',
   'https://api.codetabs.com/v1/proxy?quest=',
@@ -1096,7 +1097,7 @@ const PROXIES = [
 
 const PC_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-async function fetchWithTimeout(url, ms = 5000) {
+async function fetchWithTimeout(url, ms = 8000) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('timeout')), ms);
     // corsproxy.ioにはPC版UAをx-corsヘッダー経由で転送させる
@@ -1115,6 +1116,7 @@ async function fetchWithTimeout(url, ms = 5000) {
 
 // Shift-JISサイトはcorsproxy.ioが文字コードを壊すのでalloriginsを優先
 const PROXIES_SJIS = [
+  'https://rss-proxy.parakeet-w.workers.dev/?url=',
   'https://api.allorigins.win/raw?url=',
   'https://api.codetabs.com/v1/proxy?quest=',
   'https://thingproxy.freeboard.io/fetch/',
@@ -1398,7 +1400,16 @@ async function refreshFeed(feedId) {
   if (btn) btn.classList.add('loading');
 
   try {
-    const xml = await proxyFetch(feed.url);
+    // 失敗時に1回リトライ
+    let xml;
+    try {
+      xml = await proxyFetch(feed.url);
+    } catch(e) {
+      showToast('再試行しています...');
+      await new Promise(r => setTimeout(r, 2000));
+      xml = await proxyFetch(feed.url);
+    }
+
     const { feedTitle, favicon, items } = parseRSS(xml, feed.url);
 
     feed.title = feedTitle;
@@ -1434,7 +1445,7 @@ async function refreshFeed(feedId) {
     renderArticleList();
     showToast(newCount > 0 ? `${newCount}件の新着記事があります` : '最新の状態です');
   } catch(e) {
-    showToast('更新に失敗しました');
+    showToast('更新に失敗しました（もう一度お試しください）');
   } finally {
     if (btn) btn.classList.remove('loading');
   }
