@@ -1091,6 +1091,7 @@ const PROXIES = [
   'https://corsproxy.io/?',
   'https://api.allorigins.win/raw?url=',
   'https://api.codetabs.com/v1/proxy?quest=',
+  'https://thingproxy.freeboard.io/fetch/',
 ];
 
 const PC_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
@@ -1098,7 +1099,11 @@ const PC_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHT
 async function fetchWithTimeout(url, ms = 5000) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('timeout')), ms);
-    fetch(url, { headers: { 'User-Agent': PC_UA } }).then(res => {
+    // corsproxy.ioにはPC版UAをx-corsヘッダー経由で転送させる
+    const opts = url.includes('corsproxy.io')
+      ? { headers: { 'x-cors-headers': JSON.stringify({'User-Agent': PC_UA}) } }
+      : {};
+    fetch(url, opts).then(res => {
       clearTimeout(timer);
       resolve(res);
     }).catch(e => {
@@ -1110,10 +1115,10 @@ async function fetchWithTimeout(url, ms = 5000) {
 
 // Shift-JISサイトはcorsproxy.ioが文字コードを壊すのでalloriginsを優先
 const PROXIES_SJIS = [
-  'https://corsproxy.io/?',
-  'https://api.codetabs.com/v1/proxy?quest=',
   'https://api.allorigins.win/raw?url=',
+  'https://api.codetabs.com/v1/proxy?quest=',
   'https://thingproxy.freeboard.io/fetch/',
+  'https://corsproxy.io/?',
 ];
 
 async function proxyFetchRaw(url, preferSjis = false) {
@@ -1465,9 +1470,11 @@ const ARTICLE_SELECTORS = [
   // WordPress系・ドメサカ
   '.section-article-first', '.article-first', '#post',
   '.entry-content', '.post-content', '.wp-post-content',
-  // livedoor/doorblog系
+  // livedoor/doorblog系・jin115
   '.entry-body-text', '#ent-body', '.ent-body',
   '.article-body-inner', '.entry-content-inner',
+  // jin115モバイル対応
+  '.jin-content', '.post-inner', '.jin-article-body',
   // 汎用クラス
   '.article-body', '.entry-body', '.post-body',
   '.article-content', '.article__body',
